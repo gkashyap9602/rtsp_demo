@@ -1,8 +1,28 @@
 const express = require('express');
+const WebSocket = require('ws');
+const https = require('https');
 const app = express();
 require('dotenv').config();
 const path = require('path')
+const fs = require('fs');
 const { proxy } = require('rtsp-relay')(app);
+
+// Your SSL certificate and private key paths
+const sslKey = fs.readFileSync('/etc/letsencrypt/live/rtsp.glenwoodsouth.com/privkey.pem');
+const sslCert = fs.readFileSync('/etc/letsencrypt/live/rtsp.glenwoodsouth.com/cert.pem');
+
+// HTTPS server options
+const httpsOptions = {
+  key: sslKey,
+  cert: sslCert
+};
+
+// Create an HTTPS server
+const server = https.createServer(httpsOptions, app);
+
+
+// Initialize WebSocket server
+const wss = new WebSocket.Server({ server });
 
 const handler = (ws, url) => {
   const proxyFunction = proxy({
@@ -14,7 +34,7 @@ const handler = (ws, url) => {
   proxyFunction(ws);
 };
 
-app.ws('/api/stream', (ws, req) => {
+wss('/api/stream', (ws, req) => {
   handler(ws, req.query.url);
 });
 
@@ -31,6 +51,6 @@ app.get('/healthCheck', (req, res) => {
 const LOCAL_PORT = 6001;
 const PORT = process.env.APP_PORT || LOCAL_PORT;
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
