@@ -1,0 +1,19 @@
+{
+  "name": "rtsp-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Semih Ataman",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-rtsp-stream": "^0.0.9",
+    "rtsp-relay": "^1.8.0"
+  }
+}
